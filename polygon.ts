@@ -45,6 +45,22 @@ function distanceBetweenTwoPoint(point1: Point, point2: Point): number {
 }
 
 
+function isTargetInside(poly: Point[], pos: Point):boolean{
+
+    let c:boolean = false;
+    let i:number;
+    let j:number;
+    const n:number = poly.length;
+    
+	for(i=0,j=n-1; i<n;j=i++){
+		if( ((poly[i].y>pos.y) != (poly[j].y>pos.y)) && (pos.x < (poly[j].x-poly[i].x) * (pos.y-poly[i].y) / (poly[j].y-poly[i].y) + poly[i].x) )
+			c=!c;
+    }
+    
+	return c;
+}
+
+
 
 function getClosestPointInsidePolygon(poly: Point[], pos: Point): Point {
 
@@ -59,11 +75,15 @@ function getClosestPointInsidePolygon(poly: Point[], pos: Point): Point {
     return poly[0]
     }
 
+    if(isTargetInside(poly, pos)) {
+        return pos
+    }
+
     for (let i = 0; i < polygonSides; i++) {
 
-    const nextValue: number = (i + 1 >= polygonSides) ? 0 : i + 1;
-    const closestPoint: Point = closestDistanceBetweenLineAndDot(poly[i], poly[nextValue], pos);
-    const distance: number = distanceBetweenTwoPoint(closestPoint, pos);
+        const nextValue: number = (i + 1 >= polygonSides) ? 0 : i + 1;
+        const closestPoint: Point = closestDistanceBetweenLineAndDot(poly[i], poly[nextValue], pos);
+        const distance: number = distanceBetweenTwoPoint(closestPoint, pos);
 
         if (minimumDis === null || (minimumDis !== null && minimumDis > distance)) {
             minimumDis = distance;
@@ -75,9 +95,3 @@ function getClosestPointInsidePolygon(poly: Point[], pos: Point): Point {
     return targetPoint
 }
 
-/* These are things could be improved if given more time -
-
-#1 : I could have handled some exceptions
-#2: I could have wrote much simpler code than this
-
-*/
